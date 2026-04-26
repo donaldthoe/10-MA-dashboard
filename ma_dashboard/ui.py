@@ -13,6 +13,12 @@ STRATEGY_COLORS = {
     STRATEGY_MA: "#dc2626",
     STRATEGY_LEVERED_MA: "#f59e0b",
 }
+CHART_HEIGHTS = {
+    "equity": 350,
+    "drawdown": 300,
+    "calendar": 300,
+}
+MARKET_LABELS = {"SPY": "SPY", "QQQ": "QQQ"}
 DEFAULT_CASH_YIELD_PERCENT = 2.0
 DEFAULT_LEVERAGE = 1.25
 LEVERAGE_DISCLOSURE = (

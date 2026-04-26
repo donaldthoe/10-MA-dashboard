@@ -26,10 +26,12 @@ from ma_dashboard.data import (
     normalize_stooq_frame,
 )
 from ma_dashboard.ui import (
+    CHART_HEIGHTS,
     CHART_STRATEGIES,
     DEFAULT_CASH_YIELD_PERCENT,
     DEFAULT_LEVERAGE,
     LEVERAGE_DISCLOSURE,
+    MARKET_LABELS,
     STRATEGY_COLORS,
     default_window_bounds,
     window_slider_bounds,
@@ -287,6 +289,12 @@ def test_dashboard_chart_contract_includes_leverage_with_requested_colors():
     assert CHART_STRATEGIES == [STRATEGY_BUY_HOLD, STRATEGY_MA, STRATEGY_LEVERED_MA]
     assert STRATEGY_COLORS[STRATEGY_MA] == "#dc2626"
     assert STRATEGY_COLORS[STRATEGY_LEVERED_MA] == "#f59e0b"
+    assert CHART_HEIGHTS["equity"] <= 360
+    assert CHART_HEIGHTS["drawdown"] <= 320
+
+
+def test_dashboard_uses_short_mobile_market_labels():
+    assert MARKET_LABELS == {"SPY": "SPY", "QQQ": "QQQ"}
 
 
 def test_dashboard_defaults_use_two_percent_cash_yield():

@@ -23,10 +23,12 @@ from ma_dashboard.data import (
     load_local_stooq_csv,
 )
 from ma_dashboard.ui import (
+    CHART_HEIGHTS,
     CHART_STRATEGIES,
     DEFAULT_CASH_YIELD_PERCENT,
     DEFAULT_LEVERAGE,
     LEVERAGE_DISCLOSURE,
+    MARKET_LABELS,
     STRATEGY_COLORS,
     window_slider_bounds,
 )
@@ -42,9 +44,15 @@ st.markdown(
     """
     <style>
     .block-container {
-        padding-top: 1.25rem;
+        padding-top: 0.9rem;
         padding-bottom: 2rem;
         max-width: 1180px;
+    }
+    [data-testid="stDeployButton"],
+    [data-testid="stHeader"],
+    #MainMenu,
+    footer {
+        display: none;
     }
     .status-grid,
     .metric-card-grid {
@@ -77,14 +85,15 @@ st.markdown(
         font-size: 1rem;
         line-height: 1.25;
         font-weight: 650;
+        overflow-wrap: anywhere;
     }
     @media (max-width: 640px) {
         .block-container {
-            padding-left: 0.85rem;
-            padding-right: 0.85rem;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
         }
         h1 {
-            font-size: 1.62rem !important;
+            font-size: 1.48rem !important;
             line-height: 1.18 !important;
         }
         h2, h3 {
@@ -93,6 +102,15 @@ st.markdown(
         }
         .status-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        [data-testid="stRadio"] [role="radiogroup"] {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.45rem;
+        }
+        [data-testid="stRadio"] [role="radiogroup"] label {
+            min-height: 44px;
+            margin: 0;
         }
         .status-card,
         .metric-card {
@@ -176,15 +194,16 @@ ticker = st.radio(
     "Market",
     SUPPORTED_TICKERS,
     horizontal=True,
-    format_func=lambda value: "S&P 500 (SPY)" if value == "SPY" else "Nasdaq 100 (QQQ)",
+    format_func=lambda value: MARKET_LABELS[value],
 )
+st.caption("SPY = S&P 500 ETF. QQQ = Nasdaq 100 ETF.")
 
 observation_type = "Monthly close"
 ma_length = 10
 cash_yield = DEFAULT_CASH_YIELD_PERCENT / 100.0
 leverage = DEFAULT_LEVERAGE
 
-with st.expander("Advanced assumptions"):
+with st.expander("Settings"):
     observation_type = st.selectbox("Monthly observation", ["Monthly close", "Monthly average"])
     ma_length = st.slider("MA length", min_value=3, max_value=24, value=10, step=1)
     cash_yield = (
@@ -278,11 +297,11 @@ st.html(
             (f"Last {observation_type.lower()}", f"{result.observations.iloc[-1]:,.2f}"),
             (f"{ma_length}-month average", f"{result.sma.iloc[-1]:,.2f}"),
             ("Through", result.observations.index[-1].strftime("%Y-%m")),
-            ("Bundled file", data_path.name),
         ]
     )
 )
 st.caption(signal_help)
+st.caption(f"Bundled file: {data_path.name}")
 if data_path.name.startswith("^"):
     st.caption(
         "Bundled Stooq data is an index price proxy, not dividend-adjusted ETF total-return data."
@@ -311,7 +330,7 @@ equity_chart = px.line(
     color="Strategy",
     color_discrete_map=STRATEGY_COLORS,
 )
-compact_plotly_layout(equity_chart, height=390)
+compact_plotly_layout(equity_chart, height=CHART_HEIGHTS["equity"])
 equity_chart.update_yaxes(tickformat=",.2f")
 st.subheader("Growth of $1")
 st.plotly_chart(equity_chart, width="stretch", config=CHART_CONFIG)
@@ -324,7 +343,7 @@ drawdown_chart = px.area(
     color="Strategy",
     color_discrete_map=STRATEGY_COLORS,
 )
-compact_plotly_layout(drawdown_chart, height=340)
+compact_plotly_layout(drawdown_chart, height=CHART_HEIGHTS["drawdown"])
 drawdown_chart.update_yaxes(tickformat=".0%")
 st.subheader("Worst Declines")
 st.plotly_chart(drawdown_chart, width="stretch", config=CHART_CONFIG)
@@ -341,7 +360,7 @@ calendar_chart = px.bar(
     barmode="group",
     color_discrete_map=STRATEGY_COLORS,
 )
-compact_plotly_layout(calendar_chart, height=340)
+compact_plotly_layout(calendar_chart, height=CHART_HEIGHTS["calendar"])
 calendar_chart.update_yaxes(tickformat=".0%")
 st.subheader("Calendar-Year Returns")
 st.plotly_chart(calendar_chart, width="stretch", config=CHART_CONFIG)
