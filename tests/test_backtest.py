@@ -26,8 +26,10 @@ from ma_dashboard.data import (
     normalize_stooq_frame,
 )
 from ma_dashboard.ui import (
+    ADVANCED_METRICS_SCROLL_HELP,
     CHART_HEIGHTS,
     CHART_STRATEGIES,
+    GROWTH_CHART_TITLE,
     DEFAULT_CASH_YIELD_PERCENT,
     DEFAULT_LEVERAGE,
     LEVERAGE_DISCLOSURE,
@@ -295,6 +297,11 @@ def test_dashboard_chart_contract_includes_leverage_with_requested_colors():
 
 def test_dashboard_uses_short_mobile_market_labels():
     assert MARKET_LABELS == {"SPY": "SPY", "QQQ": "QQQ"}
+
+
+def test_dashboard_uses_mobile_friendly_table_and_chart_labels():
+    assert GROWTH_CHART_TITLE == "Growth of $1"
+    assert "Swipe sideways" in ADVANCED_METRICS_SCROLL_HELP
 
 
 def test_dashboard_defaults_use_two_percent_cash_yield():

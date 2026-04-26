@@ -23,10 +23,12 @@ from ma_dashboard.data import (
     load_local_stooq_csv,
 )
 from ma_dashboard.ui import (
+    ADVANCED_METRICS_SCROLL_HELP,
     CHART_HEIGHTS,
     CHART_STRATEGIES,
     DEFAULT_CASH_YIELD_PERCENT,
     DEFAULT_LEVERAGE,
+    GROWTH_CHART_TITLE,
     LEVERAGE_DISCLOSURE,
     MARKET_LABELS,
     STRATEGY_COLORS,
@@ -290,6 +292,17 @@ signal_help = (
 if result.liquidated:
     st.error(f"The {leverage:.2f}x leveraged MA strategy was liquidated in this test window.")
 
+equity_long = prepare_long_frame(result.equity[CHART_STRATEGIES], GROWTH_CHART_TITLE)
+equity_chart = px.line(
+    equity_long,
+    x="Date",
+    y=GROWTH_CHART_TITLE,
+    color="Strategy",
+    color_discrete_map=STRATEGY_COLORS,
+)
+compact_plotly_layout(equity_chart, height=CHART_HEIGHTS["equity"])
+equity_chart.update_yaxes(tickformat=",.2f")
+
 st.html(
     status_cards(
         [
@@ -300,6 +313,8 @@ st.html(
         ]
     )
 )
+st.subheader(GROWTH_CHART_TITLE)
+st.plotly_chart(equity_chart, width="stretch", config=CHART_CONFIG)
 st.caption(signal_help)
 st.caption(f"Bundled file: {data_path.name}")
 if data_path.name.startswith("^"):
@@ -319,21 +334,10 @@ st.subheader("Performance Snapshot")
 st.html(metric_cards(primary_metric_display))
 compact_metric_display = metric_display[["Strategy", "CAGR", "Max drawdown", "Sharpe (0% rf)"]]
 with st.expander("Advanced metrics"):
+    st.caption("Quick view")
     st.dataframe(compact_metric_display, width="stretch", hide_index=True)
+    st.caption(ADVANCED_METRICS_SCROLL_HELP)
     st.dataframe(metric_display, width="stretch", hide_index=True)
-
-equity_long = prepare_long_frame(result.equity[CHART_STRATEGIES], "Growth of $1")
-equity_chart = px.line(
-    equity_long,
-    x="Date",
-    y="Growth of $1",
-    color="Strategy",
-    color_discrete_map=STRATEGY_COLORS,
-)
-compact_plotly_layout(equity_chart, height=CHART_HEIGHTS["equity"])
-equity_chart.update_yaxes(tickformat=",.2f")
-st.subheader("Growth of $1")
-st.plotly_chart(equity_chart, width="stretch", config=CHART_CONFIG)
 
 drawdown_long = prepare_long_frame(result.drawdowns[CHART_STRATEGIES], "Drawdown")
 drawdown_chart = px.area(

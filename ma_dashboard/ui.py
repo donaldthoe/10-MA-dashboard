@@ -19,6 +19,8 @@ CHART_HEIGHTS = {
     "calendar": 300,
 }
 MARKET_LABELS = {"SPY": "SPY", "QQQ": "QQQ"}
+GROWTH_CHART_TITLE = "Growth of $1"
+ADVANCED_METRICS_SCROLL_HELP = "Full metrics. Swipe sideways on mobile to see every column."
 DEFAULT_CASH_YIELD_PERCENT = 2.0
 DEFAULT_LEVERAGE = 1.25
 LEVERAGE_DISCLOSURE = (
