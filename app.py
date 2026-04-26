@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
-import plotly.express as px
 import streamlit as st
 
 from ma_dashboard.backtest import (
@@ -28,7 +27,6 @@ from ma_dashboard.ui import (
     CHART_STRATEGIES,
     DEFAULT_CASH_YIELD_PERCENT,
     DEFAULT_LEVERAGE,
-    DRAWDOWN_CHART_KIND,
     GROWTH_CHART_TITLE,
     LEVERAGE_DISCLOSURE,
     MARKET_EXPLANATION,
@@ -42,7 +40,6 @@ st.set_page_config(page_title="10-Month MA Dashboard", layout="wide")
 
 APP_DIR = Path(__file__).resolve().parent
 BUNDLED_DATA_DIR = APP_DIR / "data" / "stooq"
-CHART_CONFIG = {"displayModeBar": False, "responsive": True}
 
 st.markdown(
     """
@@ -145,21 +142,6 @@ def number(value: float) -> str:
     if pd.isna(value):
         return "-"
     return f"{value:.2f}"
-
-
-def prepare_long_frame(frame: pd.DataFrame, value_name: str) -> pd.DataFrame:
-    return frame.reset_index(names="Date").melt("Date", var_name="Strategy", value_name=value_name)
-
-
-def compact_plotly_layout(chart, height: int = 420):
-    chart.update_layout(
-        height=height,
-        margin=dict(l=8, r=8, t=16, b=8),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
-        legend_title_text=None,
-        hovermode="x unified",
-    )
-    return chart
 
 
 def metric_cards(metrics: pd.DataFrame) -> str:
@@ -294,17 +276,6 @@ signal_help = (
 if result.liquidated:
     st.error(f"The {leverage:.2f}x leveraged MA strategy was liquidated in this test window.")
 
-equity_long = prepare_long_frame(result.equity[CHART_STRATEGIES], GROWTH_CHART_TITLE)
-equity_chart = px.line(
-    equity_long,
-    x="Date",
-    y=GROWTH_CHART_TITLE,
-    color="Strategy",
-    color_discrete_map=STRATEGY_COLORS,
-)
-compact_plotly_layout(equity_chart, height=CHART_HEIGHTS["equity"])
-equity_chart.update_yaxes(tickformat=",.2f")
-
 st.html(
     status_cards(
         [
@@ -316,7 +287,11 @@ st.html(
     )
 )
 st.subheader(GROWTH_CHART_TITLE)
-st.plotly_chart(equity_chart, width="stretch", config=CHART_CONFIG)
+st.line_chart(
+    result.equity[CHART_STRATEGIES],
+    height=CHART_HEIGHTS["equity"],
+    color=[STRATEGY_COLORS[strategy] for strategy in CHART_STRATEGIES],
+)
 st.caption(signal_help)
 st.caption(f"Bundled file: {data_path.name}")
 if data_path.name.startswith("^"):
@@ -341,36 +316,20 @@ with st.expander("Advanced metrics"):
     st.caption(ADVANCED_METRICS_SCROLL_HELP)
     st.dataframe(metric_display, width="stretch", hide_index=True)
 
-drawdown_long = prepare_long_frame(result.drawdowns[CHART_STRATEGIES], "Drawdown")
-drawdown_chart_factory = px.line if DRAWDOWN_CHART_KIND == "line" else px.area
-drawdown_chart = drawdown_chart_factory(
-    drawdown_long,
-    x="Date",
-    y="Drawdown",
-    color="Strategy",
-    color_discrete_map=STRATEGY_COLORS,
-)
-compact_plotly_layout(drawdown_chart, height=CHART_HEIGHTS["drawdown"])
-drawdown_chart.update_yaxes(tickformat=".0%")
 st.subheader("Worst Declines")
-st.plotly_chart(drawdown_chart, width="stretch", config=CHART_CONFIG)
+st.line_chart(
+    result.drawdowns[CHART_STRATEGIES],
+    height=CHART_HEIGHTS["drawdown"],
+    color=[STRATEGY_COLORS[strategy] for strategy in CHART_STRATEGIES],
+)
 
 calendar_recent = calendar[CHART_STRATEGIES].tail(6)
-calendar_long = calendar_recent.reset_index(names="Year").melt(
-    "Year", var_name="Strategy", value_name="Return"
-)
-calendar_chart = px.bar(
-    calendar_long,
-    x="Year",
-    y="Return",
-    color="Strategy",
-    barmode="group",
-    color_discrete_map=STRATEGY_COLORS,
-)
-compact_plotly_layout(calendar_chart, height=CHART_HEIGHTS["calendar"])
-calendar_chart.update_yaxes(tickformat=".0%")
 st.subheader("Calendar-Year Returns")
-st.plotly_chart(calendar_chart, width="stretch", config=CHART_CONFIG)
+st.bar_chart(
+    calendar_recent,
+    height=CHART_HEIGHTS["calendar"],
+    color=[STRATEGY_COLORS[strategy] for strategy in CHART_STRATEGIES],
+)
 
 recent_display = calendar[CHART_STRATEGIES].tail(8).copy()
 recent_display.index.name = "Year"

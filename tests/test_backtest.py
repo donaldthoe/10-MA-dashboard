@@ -1,5 +1,6 @@
 import math
 from io import BytesIO
+from pathlib import Path
 from zipfile import ZipFile
 
 import numpy as np
@@ -340,3 +341,10 @@ def test_dashboard_defaults_use_conservative_leverage():
 def test_dashboard_discloses_simplified_leverage_model():
     assert "monthly return multiple" in LEVERAGE_DISCLOSURE
     assert "borrowing rate" in LEVERAGE_DISCLOSURE
+
+
+def test_dashboard_has_no_hard_plotly_dependency():
+    root = Path(__file__).resolve().parents[1]
+
+    assert "plotly" not in (root / "app.py").read_text(encoding="utf-8").lower()
+    assert "plotly" not in (root / "requirements.txt").read_text(encoding="utf-8").lower()
