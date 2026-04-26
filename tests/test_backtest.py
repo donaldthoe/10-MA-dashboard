@@ -29,6 +29,7 @@ from ma_dashboard.data import (
 )
 from ma_dashboard.ui import (
     ADVANCED_METRICS_SCROLL_HELP,
+    CALENDAR_CHART_STACK,
     CHART_HEIGHTS,
     CHART_STRATEGIES,
     DRAWDOWN_CHART_KIND,
@@ -309,6 +310,7 @@ def test_dashboard_chart_contract_includes_leverage_with_requested_colors():
     assert STRATEGY_COLORS[STRATEGY_MA] == "#dc2626"
     assert STRATEGY_COLORS[STRATEGY_LEVERED_MA] == "#f59e0b"
     assert DRAWDOWN_CHART_KIND == "line"
+    assert CALENDAR_CHART_STACK is False
     assert CHART_HEIGHTS["equity"] <= 360
     assert CHART_HEIGHTS["drawdown"] <= 320
 

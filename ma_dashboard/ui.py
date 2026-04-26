@@ -18,6 +18,7 @@ CHART_HEIGHTS = {
     "drawdown": 300,
     "calendar": 300,
 }
+CALENDAR_CHART_STACK = False
 MARKET_LABELS = {
     "SPY": "SPY ETF",
     "QQQ": "QQQ ETF",

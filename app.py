@@ -23,6 +23,7 @@ from ma_dashboard.data import (
 )
 from ma_dashboard.ui import (
     ADVANCED_METRICS_SCROLL_HELP,
+    CALENDAR_CHART_STACK,
     CHART_HEIGHTS,
     CHART_STRATEGIES,
     DEFAULT_CASH_YIELD_PERCENT,
@@ -323,12 +324,14 @@ st.line_chart(
     color=[STRATEGY_COLORS[strategy] for strategy in CHART_STRATEGIES],
 )
 
-calendar_recent = calendar[CHART_STRATEGIES].tail(6)
+calendar_recent = calendar[CHART_STRATEGIES].tail(6) * 100.0
 st.subheader("Calendar-Year Returns")
 st.bar_chart(
     calendar_recent,
+    y_label="Return (%)",
     height=CHART_HEIGHTS["calendar"],
     color=[STRATEGY_COLORS[strategy] for strategy in CHART_STRATEGIES],
+    stack=CALENDAR_CHART_STACK,
 )
 
 recent_display = calendar[CHART_STRATEGIES].tail(8).copy()
