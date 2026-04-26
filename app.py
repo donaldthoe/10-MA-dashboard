@@ -31,6 +31,7 @@ from ma_dashboard.ui import (
     DRAWDOWN_CHART_KIND,
     GROWTH_CHART_TITLE,
     LEVERAGE_DISCLOSURE,
+    MARKET_EXPLANATION,
     MARKET_LABELS,
     STRATEGY_COLORS,
     window_slider_bounds,
@@ -199,7 +200,7 @@ ticker = st.radio(
     horizontal=True,
     format_func=lambda value: MARKET_LABELS[value],
 )
-st.caption("SPY = S&P 500 ETF. QQQ = Nasdaq 100 ETF.")
+st.caption(MARKET_EXPLANATION)
 
 observation_type = "Monthly close"
 ma_length = 10

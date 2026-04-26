@@ -18,7 +18,16 @@ CHART_HEIGHTS = {
     "drawdown": 300,
     "calendar": 300,
 }
-MARKET_LABELS = {"SPY": "SPY", "QQQ": "QQQ"}
+MARKET_LABELS = {
+    "SPY": "SPY ETF",
+    "QQQ": "QQQ ETF",
+    "SPX": "SPX Index",
+    "NDX": "NDX Index",
+}
+MARKET_EXPLANATION = (
+    "ETF = actual tradable fund history. Index = longer Stooq proxy history for 1950-style "
+    "learning; it is not an ETF and excludes fund costs."
+)
 GROWTH_CHART_TITLE = "Growth of $1"
 DRAWDOWN_CHART_KIND = "line"
 ADVANCED_METRICS_SCROLL_HELP = "Full metrics. Swipe sideways on mobile to see every column."

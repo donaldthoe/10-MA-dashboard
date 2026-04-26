@@ -19,6 +19,7 @@ from ma_dashboard.backtest import (
     performance_metrics,
 )
 from ma_dashboard.data import (
+    SUPPORTED_TICKERS,
     find_local_stooq_csv,
     load_local_stooq_csv,
     load_stooq_bulk_zip,
@@ -34,6 +35,7 @@ from ma_dashboard.ui import (
     DEFAULT_CASH_YIELD_PERCENT,
     DEFAULT_LEVERAGE,
     LEVERAGE_DISCLOSURE,
+    MARKET_EXPLANATION,
     MARKET_LABELS,
     STRATEGY_COLORS,
     default_window_bounds,
@@ -271,6 +273,19 @@ def test_local_csv_loader_finds_downloaded_stooq_alias_files(tmp_path):
     assert frame["close"].tolist() == [202, 203]
 
 
+def test_dashboard_supports_etfs_and_long_index_proxy_markets(tmp_path):
+    for filename in ("spy_us_d.csv", "qqq_us_d.csv", "^spx_d.csv", "^ndx_d.csv"):
+        (tmp_path / filename).write_text(
+            "Date,Open,High,Low,Close,Volume\n"
+            "2020-01-02,100,103,99,102,1000\n",
+            encoding="utf-8",
+        )
+
+    assert SUPPORTED_TICKERS == ("SPY", "QQQ", "SPX", "NDX")
+    assert find_local_stooq_csv("SPX", tmp_path).name == "^spx_d.csv"
+    assert find_local_stooq_csv("NDX", tmp_path).name == "^ndx_d.csv"
+
+
 def test_default_window_starts_at_1950_when_data_is_older():
     start, end = default_window_bounds(pd.to_datetime(["1938-01-31", "2026-03-31"]))
 
@@ -297,8 +312,16 @@ def test_dashboard_chart_contract_includes_leverage_with_requested_colors():
     assert CHART_HEIGHTS["drawdown"] <= 320
 
 
-def test_dashboard_uses_short_mobile_market_labels():
-    assert MARKET_LABELS == {"SPY": "SPY", "QQQ": "QQQ"}
+def test_dashboard_uses_short_mobile_market_labels_and_market_explanation():
+    assert MARKET_LABELS == {
+        "SPY": "SPY ETF",
+        "QQQ": "QQQ ETF",
+        "SPX": "SPX Index",
+        "NDX": "NDX Index",
+    }
+    assert "ETF" in MARKET_EXPLANATION
+    assert "Index" in MARKET_EXPLANATION
+    assert "1950" in MARKET_EXPLANATION
 
 
 def test_dashboard_uses_mobile_friendly_table_and_chart_labels():

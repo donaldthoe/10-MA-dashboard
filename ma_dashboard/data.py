@@ -11,11 +11,19 @@ from zipfile import ZipFile
 import pandas as pd
 
 
-SUPPORTED_TICKERS = ("SPY", "QQQ")
+SUPPORTED_TICKERS = ("SPY", "QQQ", "SPX", "NDX")
 STOOQ_BASE_URL = "https://stooq.com/q/d/l/"
+STOOQ_SYMBOLS = {
+    "SPY": "spy.us",
+    "QQQ": "qqq.us",
+    "SPX": "^spx",
+    "NDX": "^ndx",
+}
 LOCAL_CSV_CANDIDATES = {
     "SPY": ("spy_us_d.csv", "spy.us_d.csv", "spy_d.csv", "spy.csv", "^spx_d.csv"),
     "QQQ": ("qqq_us_d.csv", "qqq.us_d.csv", "qqq_d.csv", "qqq.csv", "^ndx_d.csv"),
+    "SPX": ("^spx_d.csv", "spx_d.csv", "^spx.csv", "spx.csv"),
+    "NDX": ("^ndx_d.csv", "ndx_d.csv", "^ndx.csv", "ndx.csv"),
 }
 
 
@@ -23,7 +31,7 @@ def stooq_download_url(ticker: str, api_key: str | None = None) -> str:
     symbol = ticker.upper()
     if symbol not in SUPPORTED_TICKERS:
         raise ValueError(f"Unsupported ticker: {ticker}")
-    query = {"s": f"{symbol.lower()}.us", "i": "d"}
+    query = {"s": STOOQ_SYMBOLS[symbol], "i": "d"}
     if api_key:
         query["apikey"] = api_key.strip()
     return f"{STOOQ_BASE_URL}?{urlencode(query)}"
