@@ -29,7 +29,7 @@ The loader prefers exact ETF exports (`spy_us_d.csv`, `spy.us_d.csv`, `spy_d.csv
 
 The strategy holds the selected market when the previous monthly close is above its simple moving average. Otherwise it holds cash. Defaults are a 10-month moving average, 2% annual cash yield, 1.25x leveraged view, and a window floor of 1950 where data exists. The main dashboard keeps the beginner path simple: choose SPY or QQQ and review the rule. Advanced assumptions are available in the collapsed settings.
 
-The leveraged strategy applies the selected leverage to monthly ticker returns while invested. If a leveraged monthly loss reaches or exceeds 100%, the strategy is treated as liquidated and remains at zero.
+The leveraged strategy applies the selected leverage to monthly ticker returns while invested and subtracts the selected cash yield as the borrowing rate on borrowed exposure. If a leveraged monthly loss reaches or exceeds 100%, the strategy is treated as liquidated and remains at zero. This is still a monthly return-multiple scenario, not a daily-reset ETF or full margin-account simulation.
 
 ## Tests
 

@@ -16,8 +16,9 @@ STRATEGY_COLORS = {
 DEFAULT_CASH_YIELD_PERCENT = 2.0
 DEFAULT_LEVERAGE = 1.25
 LEVERAGE_DISCLOSURE = (
-    "Leveraged view is a monthly return multiple; it excludes financing costs, expenses, "
-    "daily reset effects, margin rules, and intramonth liquidation."
+    "Leveraged view is a monthly return multiple using the selected cash yield as the "
+    "borrowing rate on borrowed exposure; it excludes expenses, daily reset effects, "
+    "margin rules, and intramonth liquidation."
 )
 
 

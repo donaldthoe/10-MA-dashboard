@@ -124,7 +124,8 @@ def _levered_returns(
             values.append(cash_monthly)
             continue
 
-        levered = float(base_return) * leverage
+        borrowed_exposure = leverage - 1.0
+        levered = float(base_return) * leverage - borrowed_exposure * cash_monthly
         if levered <= -1.0:
             values.append(-1.0)
             liquidated = True

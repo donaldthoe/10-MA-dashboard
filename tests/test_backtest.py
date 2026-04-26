@@ -116,6 +116,27 @@ def test_leveraged_strategy_can_be_liquidated_and_stays_at_zero():
     assert result.liquidated is True
 
 
+def test_leveraged_strategy_charges_cash_rate_on_borrowed_exposure():
+    observations = pd.Series(
+        [100.0, 110.0, 120.0],
+        index=pd.date_range("2020-01-31", periods=3, freq="ME"),
+    )
+    monthly_returns = pd.Series([0.0, 0.0, 0.05], index=observations.index)
+    monthly_borrow_rate = 0.01
+    annual_cash_yield = (1.0 + monthly_borrow_rate) ** 12 - 1.0
+
+    result = backtest_strategies(
+        observations=observations,
+        monthly_returns=monthly_returns,
+        ma_length=2,
+        cash_yield=annual_cash_yield,
+        leverage=2.0,
+    )
+
+    assert result.signal.tolist() == [False, False, True]
+    assert result.returns["10m MA on leverage"].iloc[-1] == 0.09
+
+
 def test_performance_metrics_include_drawdown_and_ulcer_index():
     monthly_returns = pd.DataFrame(
         {
@@ -278,3 +299,4 @@ def test_dashboard_defaults_use_conservative_leverage():
 
 def test_dashboard_discloses_simplified_leverage_model():
     assert "monthly return multiple" in LEVERAGE_DISCLOSURE
+    assert "borrowing rate" in LEVERAGE_DISCLOSURE
