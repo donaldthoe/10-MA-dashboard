@@ -28,6 +28,7 @@ from ma_dashboard.ui import (
     CHART_STRATEGIES,
     DEFAULT_CASH_YIELD_PERCENT,
     DEFAULT_LEVERAGE,
+    DRAWDOWN_CHART_KIND,
     GROWTH_CHART_TITLE,
     LEVERAGE_DISCLOSURE,
     MARKET_LABELS,
@@ -340,7 +341,8 @@ with st.expander("Advanced metrics"):
     st.dataframe(metric_display, width="stretch", hide_index=True)
 
 drawdown_long = prepare_long_frame(result.drawdowns[CHART_STRATEGIES], "Drawdown")
-drawdown_chart = px.area(
+drawdown_chart_factory = px.line if DRAWDOWN_CHART_KIND == "line" else px.area
+drawdown_chart = drawdown_chart_factory(
     drawdown_long,
     x="Date",
     y="Drawdown",

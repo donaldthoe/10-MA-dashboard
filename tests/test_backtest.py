@@ -29,6 +29,7 @@ from ma_dashboard.ui import (
     ADVANCED_METRICS_SCROLL_HELP,
     CHART_HEIGHTS,
     CHART_STRATEGIES,
+    DRAWDOWN_CHART_KIND,
     GROWTH_CHART_TITLE,
     DEFAULT_CASH_YIELD_PERCENT,
     DEFAULT_LEVERAGE,
@@ -291,6 +292,7 @@ def test_dashboard_chart_contract_includes_leverage_with_requested_colors():
     assert CHART_STRATEGIES == [STRATEGY_BUY_HOLD, STRATEGY_MA, STRATEGY_LEVERED_MA]
     assert STRATEGY_COLORS[STRATEGY_MA] == "#dc2626"
     assert STRATEGY_COLORS[STRATEGY_LEVERED_MA] == "#f59e0b"
+    assert DRAWDOWN_CHART_KIND == "line"
     assert CHART_HEIGHTS["equity"] <= 360
     assert CHART_HEIGHTS["drawdown"] <= 320
 
